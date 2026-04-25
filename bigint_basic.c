@@ -96,6 +96,31 @@ bigint_t *new_basic_bigint(sign_t sign, baseint_t base, baseint_t digit_value) {
 bigint_t *cleanup_bigint(bigint_t *bigint) {
 
   // YOUR CODE HERE
+  if (bigint == NULL) return NULL;
+
+  digit_t *first = bigint->first;
+
+  while (first != NULL) {
+    if (first->value != 0) {
+      if (bigint->sign == SIGN_ZERO) {
+        bigint->sign = SIGN_POSITIVE;
+      }
+      return bigint;
+    }
+
+    if (first->next == NULL) {
+      bigint->sign = SIGN_ZERO;
+      return bigint;
+    }
+
+    digit_t *newFirst = first->next;
+    newFirst->prev = NULL;
+    bigint->first = newFirst;
+    free(first);
+    first = newFirst;
+  }
+
+  return bigint;
 }
 
 /* Frees a big integer and all its digits.
