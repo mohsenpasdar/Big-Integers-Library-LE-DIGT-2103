@@ -137,7 +137,7 @@ void bigint_free(bigint_t *bigint) {
   while (current != NULL) {
     digit_t *next = current->next;
     free(current);
-    current = next->next;
+    current = next;
   }
 
   free(bigint);
@@ -156,7 +156,7 @@ uintmax_t bigint_num_digits(bigint_t *bigint) {
   // YOUR CODE HERE
   if (bigint == NULL) return 0;
 
-  uintmax_t *count = 0;
+  uintmax_t count = 0;
 
   digit_t *current = bigint->first;
 
