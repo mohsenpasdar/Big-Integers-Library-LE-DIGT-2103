@@ -129,6 +129,18 @@ void bigint_free(bigint_t *bigint) {
 uintmax_t bigint_num_digits(bigint_t *bigint) {
 
   // YOUR CODE HERE
+  if (bigint == NULL) return 0;
+
+  uintmax_t *count = 0;
+
+  digit_t *current = bigint->first;
+
+  while (current != NULL) {
+    count++;
+    current = current->next;
+  }
+  
+  return count;
 }
 
 /* Creates a new copy of a big integer. The copy will represent the
