@@ -30,20 +30,20 @@ digit_t *bigint_add_digit(bigint_t *bigint, baseint_t value, digit_t *next, digi
     return NULL;
   }
 
-  d -> value = value;
-  d -> prev = prev;
+  d->value = value;
+  d->prev = prev;
   d -> next = next;
   
   if (prev != NULL) {
-    prev -> next = d;
+    prev->next = d;
   } else {
-    bigint -> first = d;
+    bigint->first = d;
   }
 
   if (next != NULL) {
-    next -> prev = d;
+    next->prev = d;
   } else {
-    bigint -> last = d;
+    bigint->last = d;
   }
 
   return d;
@@ -64,6 +64,22 @@ digit_t *bigint_add_digit(bigint_t *bigint, baseint_t value, digit_t *next, digi
 bigint_t *new_basic_bigint(sign_t sign, baseint_t base, baseint_t digit_value) {
   
   // YOUR CODE HERE
+  bigint_t *bigint = malloc(sizeof(bigint_t));
+
+  if (bigint == NULL) return NULL;
+
+  bigint->sign = sign;
+  bigint->base = base;
+  bigint->first = NULL;
+  bigint->last = NULL;
+
+  digit_t *digit = bigint_add_digit(bigint, digit_value, NULL, NULL);
+  if (digit == NULL) {
+    free(bigint);
+    return NULL;
+  }
+
+  return bigint;
 }
 
 /* Ensures that the big integer data structure is clean. Removes
