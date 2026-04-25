@@ -105,6 +105,17 @@ bigint_t *cleanup_bigint(bigint_t *bigint) {
 void bigint_free(bigint_t *bigint) {
   
   // YOUR CODE HERE
+  if (bigint == NULL) return;
+
+  digit_t *current = bigint->first;
+
+  while (current != NULL) {
+    digit_t *next = current->next;
+    free(current);
+    current = next->next;
+  }
+
+  free(bigint);
 }
 
 /* Counts the number of digits in a big integer.
