@@ -179,4 +179,28 @@ uintmax_t bigint_num_digits(bigint_t *bigint) {
 bigint_t *bigint_dup(bigint_t *src) {
 
   // YOUR CODE HERE
+  if (src == NULL) return NULL;
+
+  bigint_t *copy = malloc(sizeof(bigint_t));
+
+  if (copy == NULL) return NULL;
+
+  copy->base = src->base;
+  copy->sign = src->sign;
+  copy->first = NULL;
+  copy->last = NULL;
+
+  digit_t *current = src->first;
+
+  while (current != NULL) {
+    digit_t *bigintFirst = bigint_add_digit(copy, current->value, NULL, copy->last);
+    if (bigintFirst == NULL) {
+      bigint_free(copy);
+      return NULL;
+    }
+
+    current = current->next;
+  }
+
+  return cleanup_bigint(copy);
 }
