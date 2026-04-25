@@ -24,6 +24,29 @@
 digit_t *bigint_add_digit(bigint_t *bigint, baseint_t value, digit_t *next, digit_t *prev) {
 
   // YOUR CODE HERE
+  digit_t *d = malloc(sizeof(digit_t));
+
+  if (d == NULL) {
+    return NULL;
+  }
+
+  d -> value = value;
+  d -> prev = prev;
+  d -> next = next;
+  
+  if (prev != NULL) {
+    prev -> next = d;
+  } else {
+    bigint -> first = d;
+  }
+
+  if (next != NULL) {
+    next -> prev = d;
+  } else {
+    bigint -> last = d;
+  }
+
+  return d;
 }
 
 /* Allocates and initializes a new big integer struct that has a
