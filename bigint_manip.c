@@ -13,6 +13,53 @@
 bigint_t *bigint_increment(bigint_t *bigint) {
 
   // YOUR CODE HERE
+
+  if (bigint == NULL) return NULL;
+
+  if (bigint->sign == SIGN_ZERO) {
+    bigint->sign = SIGN_POSITIVE;
+    bigint->first->value = 1;
+    return bigint;
+  }
+
+  if (bigint->sign == SIGN_POSITIVE) {
+
+    digit_t *current = bigint->last;
+    
+    while (current != NULL) {
+      if (current->value + 1 < bigint->base) {
+        current->value++;
+        return bigint;
+      }
+      
+      current->value = 0;
+      current = current->prev;
+    }
+
+    if (bigint_add_digit(bigint, 1, bigint->first, NULL) == NULL) {
+      return NULL;
+    }
+  
+    return bigint;
+  }
+
+  if (bigint->sign == SIGN_NEGATIVE) {
+    digit_t *current = bigint->last;
+    
+    while (current != NULL) {
+      if (current->value > 0) {
+        current->value--;
+        break;
+      }
+
+      current->value = bigint->base - 1;
+      current = current->next;
+    }
+
+    return cleanup_bigint(bigint);
+  }
+
+  return bigint;
 }
 
 /* Increments the value of a bigint object in-place by one.
