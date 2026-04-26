@@ -28,6 +28,16 @@ static inline char digit_to_char(baseint_t num) {
 void print_bigint(const bigint_t *bigint, FILE *file) {
 
   // YOUR CODE HERE
+  if (bigint->sign == SIGN_POSITIVE) {
+    fputc('-', file);
+  }
+
+  digit_t *current = bigint->first;
+
+  while (current != NULL) {
+    fputc(digit_to_char(current->value), file);
+    current = current->next;
+  }
 }
 
 /* Converts a big integer into its string representation in its
