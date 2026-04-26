@@ -13,13 +13,12 @@
 bigint_t *bigint_increment(bigint_t *bigint) {
 
   // YOUR CODE HERE
-
   if (bigint == NULL) return NULL;
 
   if (bigint->sign == SIGN_ZERO) {
     bigint->sign = SIGN_POSITIVE;
     bigint->first->value = 1;
-    return bigint;
+    return cleanup_bigint(bigint);
   }
 
   if (bigint->sign == SIGN_POSITIVE) {
@@ -53,7 +52,7 @@ bigint_t *bigint_increment(bigint_t *bigint) {
       }
 
       current->value = bigint->base - 1;
-      current = current->next;
+      current = current->prev;
     }
 
     return cleanup_bigint(bigint);
@@ -72,6 +71,52 @@ bigint_t *bigint_increment(bigint_t *bigint) {
 bigint_t *bigint_decrement(bigint_t *bigint) {
 
   // YOUR CODE HERE
+  if (bigint == NULL) return NULL;
+
+  if (bigint->sign == SIGN_ZERO) {
+    bigint->sign = SIGN_NEGATIVE;
+    bigint->first->value = -1;
+    return cleanup_bigint(bigint);
+  }
+
+  if (bigint->sign == SIGN_POSITIVE) {
+    digit_t *current = bigint->last;
+    
+    while (current != NULL) {
+      if (current->value > 0) {
+        current->value--;
+        break;
+      }
+
+      current->value = bigint->base - 1;
+      current = current->prev;
+    }
+
+    return cleanup_bigint(bigint);
+  }
+
+  if (bigint->sign == SIGN_NEGATIVE) {
+
+    digit_t *current = bigint->last;
+    
+    while (current != NULL) {
+      if (current->value + 1 < bigint->base) {
+        current->value++;
+        return bigint;
+      }
+      
+      current->value = 0;
+      current = current->prev;
+    }
+
+    if (bigint_add_digit(bigint, 1, bigint->first, NULL) == NULL) {
+      return NULL;
+    }
+  
+    return bigint;
+  }
+
+  return bigint;
 }
 
 /* Divides a big integer by an unsigned integer divisor. This function
