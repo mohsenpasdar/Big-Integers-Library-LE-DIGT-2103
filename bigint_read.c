@@ -29,7 +29,7 @@ bigint_t *uint_to_bigint(uintmax_t value, baseint_t base) {
   while (value > 0) {
     digit = value % base;
     value = value / base;
-    
+
     if(bigint_add_digit(bigint, digit, bigint->first, NULL) == NULL) {
       bigint_free(bigint);
       return NULL;
@@ -52,6 +52,15 @@ bigint_t *uint_to_bigint(uintmax_t value, baseint_t base) {
 bigint_t *int_to_bigint(intmax_t value, baseint_t base) {
 
   // YOUR CODE HERE
+  if (value >= 0) return uint_to_bigint(value, base);
+
+  uintmax_t magnitude = (uintmax_t)(-(value + 1)) + 1;
+  bigint_t *bigint = uint_to_bigint(magnitude, base);
+  
+  if (bigint == NULL) return NULL;
+
+  bigint->sign = SIGN_NEGATIVE;
+  return cleanup_bigint(bigint);
 }
 
 /* Converts a character to the digit value it represents. This is a
