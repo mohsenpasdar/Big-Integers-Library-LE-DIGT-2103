@@ -28,6 +28,8 @@ static inline char digit_to_char(baseint_t num) {
 void print_bigint(const bigint_t *bigint, FILE *file) {
 
   // YOUR CODE HERE
+  bigint = cleanup_bigint(bigint);
+
   if (bigint->sign == SIGN_POSITIVE) {
     fputc('-', file);
   }
@@ -55,6 +57,25 @@ void print_bigint(const bigint_t *bigint, FILE *file) {
 void bigint_to_str(const bigint_t *bigint, char *buf) {
 
   // YOUR CODE HERE
+  bigint = cleanup_bigint(bigint);
+
+  char *pos = buf;
+
+  if (bigint->sign == SIGN_NEGATIVE) {
+    *pos = '-';
+    pos++;
+  }
+
+  digit_t *current = bigint->first;
+
+  while (current != NULL)
+  {
+    *pos = digit_to_char(current->value);
+    pos++;
+    current = current->next;
+  }
+
+  *pos = '\0';
 }
 
 /* Converts the absolute value of a big integer (i.e., ignoring the
