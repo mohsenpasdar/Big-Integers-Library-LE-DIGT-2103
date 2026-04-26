@@ -16,6 +16,27 @@
 bigint_t *uint_to_bigint(uintmax_t value, baseint_t base) {
 
   // YOUR CODE HERE
+  if (value == 0) {
+    return new_basic_bigint(SIGN_ZERO, base, 0);
+  }
+
+  baseint_t digit = value % base;
+  value = value / base;
+
+  bigint_t *bigint = new_basic_bigint(SIGN_POSITIVE, base, digit);
+  if (bigint == NULL) return NULL;
+
+  while (value > 0) {
+    digit = value % base;
+    value = value / base;
+    
+    if(bigint_add_digit(bigint, digit, bigint->first, NULL) == NULL) {
+      bigint_free(bigint);
+      return NULL;
+    }
+  }
+
+  return cleanup_bigint(bigint);
 }
 
 /* Converts a signed integer to a big integer.
