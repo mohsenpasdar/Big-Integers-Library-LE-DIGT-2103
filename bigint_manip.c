@@ -197,4 +197,59 @@ bigint_t *bigint_divide_by_uint(const bigint_t *dividend, baseint_t divisor,
 bigint_t *bigint_change_base(bigint_t *old, baseint_t new_base) {
 
   // YOUR CODE HERE
+  if (old == NULL) return NULL;
+
+  if (new_base < MIN_BASE || new_base > MAX_BASE) {
+    return NULL;
+  }
+
+  if (old->base == new_base) return bigint_dup(old);
+
+  if (old->sign == SIGN_ZERO) {
+    return new_basic_bigint(SIGN_ZERO, new_base, 0);
+  }
+
+  bigint_t *temp = bigint_dup(old);
+  if (temp == NULL) {
+    return NULL;
+  }
+  
+  temp->sign = SIGN_POSITIVE;
+  
+  bigint_t *result = NULL;
+
+  while (temp->sign != SIGN_ZERO)
+  {
+    baseint_t rem;
+    bigint_t *quotient = bigint_divide_by_uint(temp, new_base, &rem);
+
+    if (quotient == NULL) {
+      bigint_free(temp);
+      bigint_free(result);
+      return NULL;
+    }
+
+    if (result == NULL) {
+      result = new_basic_bigint(old->sign, new_base, rem);
+
+      if (result == NULL) {
+        bigint_free(temp);
+        bigint_free(quotient);
+        return NULL;
+      }
+    } else {
+      if (bigint_add_digit(result, rem, result->first, NULL) == NULL) {
+        bigint_free(temp);
+        bigint_free(quotient);
+        bigint_free(result);
+        return NULL;
+      }
+    }
+    bigint_free(temp);
+    temp = quotient;
+  }
+
+  bigint_free(temp);
+
+  return cleanup_bigint(result);
 }
