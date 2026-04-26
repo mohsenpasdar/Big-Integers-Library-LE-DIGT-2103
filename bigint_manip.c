@@ -39,7 +39,7 @@ bigint_t *bigint_increment(bigint_t *bigint) {
       return NULL;
     }
   
-    return bigint;
+    return cleanup_bigint(bigint);
   }
 
   if (bigint->sign == SIGN_NEGATIVE) {
@@ -75,7 +75,7 @@ bigint_t *bigint_decrement(bigint_t *bigint) {
 
   if (bigint->sign == SIGN_ZERO) {
     bigint->sign = SIGN_NEGATIVE;
-    bigint->first->value = -1;
+    bigint->first->value = 1;
     return cleanup_bigint(bigint);
   }
 
@@ -113,7 +113,7 @@ bigint_t *bigint_decrement(bigint_t *bigint) {
       return NULL;
     }
   
-    return bigint;
+    return cleanup_bigint(bigint);
   }
 
   return bigint;
@@ -139,6 +139,45 @@ bigint_t *bigint_divide_by_uint(const bigint_t *dividend, baseint_t divisor,
 				baseint_t *remainder) {
 
   // YOUR CODE HERE
+  if (dividend == NULL || divisor == 0) {
+    return NULL;
+  }
+
+  uintmax_t carry = 0;
+
+  digit_t *current = dividend->first;
+
+  uintmax_t value = carry * dividend->base + current->value;
+  baseint_t quotient_digit = value / divisor;
+  carry = value % divisor;
+
+  bigint_t *quotient = new_basic_bigint(dividend->sign, dividend->base, quotient_digit);
+
+  if (quotient == NULL) {
+    return NULL;
+  }
+
+  current = current->next;
+
+  while (current != NULL)
+  {
+    value = carry * dividend->base + current->value;
+    quotient_digit = value / divisor;
+    carry = value % divisor;
+
+    if (bigint_add_digit(quotient, quotient_digit, NULL, quotient->last) == NULL ) {
+      bigint_free(quotient);
+      return NULL;
+    }
+
+    current = current->next;
+  }
+  
+  if (remainder != NULL) {
+    *remainder = carry;
+  }
+
+  return cleanup_bigint(quotient);
 }
 
 /* Creates a copy of a big integer, replacing the base with a new
