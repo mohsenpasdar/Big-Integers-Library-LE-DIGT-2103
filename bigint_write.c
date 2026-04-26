@@ -30,7 +30,7 @@ void print_bigint(const bigint_t *bigint, FILE *file) {
   // YOUR CODE HERE
   bigint = cleanup_bigint(bigint);
 
-  if (bigint->sign == SIGN_POSITIVE) {
+  if (bigint->sign == SIGN_NEGATIVE) {
     fputc('-', file);
   }
 
@@ -93,7 +93,7 @@ uintmax_t bigint_to_uint(const bigint_t *bigint) {
   // YOUR CODE HERE
   uintmax_t result = 0;
 
-  digit_t *current = bigint->first;
+  const digit_t *current = bigint->first;
 
   while (current != NULL) {
     result = result * bigint->base + current->value;
@@ -115,4 +115,11 @@ uintmax_t bigint_to_uint(const bigint_t *bigint) {
 intmax_t bigint_to_int(const bigint_t *bigint) {
 
   // YOUR CODE HERE
+  uintmax_t magnitude = bigint_to_uint(bigint);
+
+  if (bigint->sign == SIGN_NEGATIVE) {
+    return -((intmax_t)magnitude - 1) - 1; 
+  }
+  
+  return (intmax_t)magnitude;
 }
