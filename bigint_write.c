@@ -91,6 +91,16 @@ void bigint_to_str(const bigint_t *bigint, char *buf) {
 uintmax_t bigint_to_uint(const bigint_t *bigint) {
 
   // YOUR CODE HERE
+  uintmax_t result = 0;
+
+  digit_t *current = bigint->first;
+
+  while (current != NULL) {
+    result = result * bigint->base + current->value;
+    current = current->next;
+  }
+
+  return result;
 }
 
 /* Converts a big integer into its signed integer representation. This
