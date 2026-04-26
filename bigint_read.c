@@ -182,4 +182,55 @@ bigint_t *str_to_bigint(char *str, char **endptr, baseint_t base) {
 bigint_t *read_bigint(FILE *file, baseint_t base) {
 
   // YOUR CODE HERE
+  int c;
+
+  do {
+    c = fgetc(file);
+  } while (c != EOF && isspace((unsigned char)c));
+
+  sign_t sign = SIGN_POSITIVE;
+
+  if (c == '+') {
+    c = fgetc(file);
+  } else if (c == '-') {
+    sign = SIGN_NEGATIVE;
+    c = fgetc(file);
+  }
+
+  baseint_t digit = char_to_digit(c);
+
+  if (c == EOF || digit == INVALID_DIGIT || digit >= base) {
+    if (c != EOF) {
+      ungetc(c, file);
+    }
+
+    return new_basic_bigint(SIGN_ZERO, base, 0);
+  }
+
+  bigint_t *bigint = new_basic_bigint(sign, base, digit);
+  if (bigint == NULL) {
+    return NULL;
+  }
+
+  while (1) {
+    c = fgetc(file);
+
+    if (c == EOF) {
+      break;
+    }
+
+    digit = char_to_digit(c);
+
+    if (digit == INVALID_DIGIT || digit >= base) {
+      ungetc(c, file);
+      break;
+    }
+
+    if (bigint_add_digit(bigint, digit, NULL, bigint->last) == NULL) {
+      bigint_free(bigint);
+      return NULL;
+    }
+  }
+
+  return cleanup_bigint(bigint); 
 }
