@@ -108,6 +108,58 @@ static inline baseint_t char_to_digit(int c) {
 bigint_t *str_to_bigint(char *str, char **endptr, baseint_t base) {
 
   // YOUR CODE HERE
+    char *p = str;
+    
+    while (isspace((unsigned char)*p)) {
+      p++;
+    }
+
+    sign_t sign = SIGN_POSITIVE;
+
+    if (*p == '+') {
+      p++;
+    } else if (*p == '-') {
+      sign = SIGN_NEGATIVE;
+      p++;
+    }
+
+    baseint_t digit = char_to_digit((unsigned char)*p);
+
+    if (digit == INVALID_DIGIT || digit >= base) {
+      if (endptr != NULL) {
+        *endptr = p;
+      }
+
+      return new_basic_bigint(SIGN_ZERO, base, 0);
+    }
+
+    bigint_t *bigint = new_basic_bigint(sign, base, digit);
+    if (bigint == NULL) {
+      return NULL;
+    }
+
+    p++;
+
+    while (*p != '\0') {
+      digit = char_to_digit((unsigned char)*p);
+
+      if (digit == INVALID_DIGIT || digit >= base) {
+        break;
+      }
+
+      if (bigint_add_digit(bigint, digit, NULL, bigint->last) == NULL) {
+        bigint_free(bigint);
+        return NULL;
+      }
+
+      p++;
+    }
+
+    if (endptr != NULL) {
+      *endptr = p;
+    }
+
+    return cleanup_bigint(bigint);
 }
 
 /* Reads a big integer from a file or terminal in the given base.
