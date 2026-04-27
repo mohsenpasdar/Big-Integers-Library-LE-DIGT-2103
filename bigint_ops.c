@@ -14,6 +14,67 @@
 int bigint_cmp(bigint_t *a, bigint_t *b) {
 
   // YOUR CODE HERE
+  if (a == NULL || b == NULL) {
+    return 0;
+  }
+
+  if (a->sign != b->sign) {
+    return a->sign - b->sign;
+  }
+
+  if (a->sign == SIGN_ZERO) {
+    return 0;
+  }
+
+  bigint_t *b_converted = b;
+  int should_free_b = 0;
+
+  if (a->base != b->base) {
+    b_converted = bigint_change_base(b, a->base);
+
+    if (b_converted == NULL) {
+      return 0;
+    }
+
+    should_free_b = 1;
+  }
+
+  int result = 0;
+
+  uintmax_t a_digits = bigint_num_digits(a);
+  uintmax_t b_digits = bigint_num_digits(b_converted);
+
+  if (a_digits < b_digits) {
+    result = -1;
+  } else if (a_digits > b_digits) {
+    result = 1;
+  } else {
+    digit_t *a_current = a->first;
+    digit_t *b_current = b_converted->first;
+
+    while (a_current != NULL && b_current != NULL) {
+      if (a_current->value < b_current->value) {
+        result = -1;
+        break;
+      } else if (a_current->value > b_current->value) {
+        result = 1;
+        break;
+      }
+
+      a_current = a_current->next;
+      b_current = b_current->next;
+    }
+  }
+
+  if (should_free_b) {
+    bigint_free(b_converted);
+  }
+
+  if (a->sign == SIGN_NEGATIVE) {
+    result = -result;
+  }
+
+  return result;
 }
 
 /* Creates a new big integer representing the sum of two big
